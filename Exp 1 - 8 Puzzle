@@ -1,0 +1,44 @@
+from queue import PriorityQueue
+gs=(1,2,3,4,5,6,7,8,0)
+def heu(state):
+    dis=0
+    for i in range(3):
+        for j in range(3):
+            tile = state[i*3+j]
+            if tile !=0:
+                x,y=(tile-1)//3,(tile-1)%3
+                dis+=abs(x-i)+abs(y-j)
+    return dis
+
+def suc(state):
+    result=[]
+    i=state.index(0)
+    if i%3 !=0:
+        s=list(state); s[i],s[i-1] = s[i-1],s[i]; result.append(tuple(s))
+    if i%3 !=2:
+        s=list(state); s[i],s[i+1] = s[i+1],s[i]; result.append(tuple(s))
+    if i//3 !=0:
+        s=list(state); s[i],s[i-3] = s[i-3],s[i]; result.append(tuple(s))
+    if i//3 !=2:
+        s=list(state); s[i],s[i+3] = s[i+3],s[i]; result.append(tuple(s))
+        
+    return result
+
+def solve(initial):
+    fr=PriorityQueue()
+    fr.put((heu(initial),initial))
+    explored = set()
+    while not fr.empty():
+        _, state = fr.get()
+        if state == gs: return True
+        explored.add(state)
+        for s in suc(state):
+            if s not in explored:
+                fr.put (heu(s)+ len(explored), s)
+        return False
+    
+initial_state =(2,8,3,1,6,4,7,0,5)
+if solve(initial_state):
+    print("the puzzle is Solvable!")
+else:
+    print("The puzzle is unsolvable")
